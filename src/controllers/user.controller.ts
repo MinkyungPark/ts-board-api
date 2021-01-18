@@ -1,37 +1,37 @@
 import { Request, Response, NextFunction } from "express";
 import { getRepository } from "typeorm";
 import { User } from "../entity/User";
-import passport from "passport";
+import jwt from "jsonwebtoken";
 
+interface DataStoredInToken {
+    _email: string;
+}
 
-export const getUsers = async (req: Request, res: Response) => {
+export const verifyToken = async (req: Request, res: Response, next:NextFunction) => {
     try {
-        const users = await getRepository(User).find();
-        console.log(users);
-        res.json(users);
-    } catch (e) {
-        res.status(404).json({message: e.message});
-        throw new Error(e);
+        const clientToken = req.cookies.user;
+        const decoded = jwt.verify(clientToken, process.env.JWT_SECRET) as DataStoredInToken;
+
+        if (decoded) {
+            res.locals.userID = decoded._email;
+            next();
+        } else {
+            res.status(401).json({ error: 'unauthorized' });
+        }
+    } catch(e) {
+        console.error(e);
+        next(e);
     }
 }
 
-export const getUser = async (req: Request, res: Response) => {}
-
-export const updateUser = async (req: Request, res: Response) => {}
-
-export const deleteUser = async (req: Request, res: Response) => {}
-
 export const createUser = async (req: Request, res: Response) => {
-    const users = await getRepository(User).find();
-
-    const user = new User();
-    if (req.query) {
+    const user: User = new User();
+    if (req.body) {
         user.firstName = req.body.firstName;
         user.lastName = req.body.lastName;
         user.email = req.body.email;
         user.password = req.body.password;
     }
-
     try {
         user.save();
         res.json({ 
@@ -40,18 +40,82 @@ export const createUser = async (req: Request, res: Response) => {
         });
         console.log(user);
     } catch (e) {
-        res.status(404).json({message: e.message});
-        throw new Error(e);
+        console.error(e);
     }
 }
 
 export const login = async (req: Request, res: Response) => {
-    if (req.user) {
-        return res.send("User Exist, you need Logout first")
+    try {
+        const user: User = await getRepository(User).findOne({email: req.body.email, password: req.body.password});
+        if(!user) {
+            return res.status(404).json({ message: "Invalid Email or Password"})
+        } else {
+            const expiresIn = 60 * 60;
+            const secret = process.env.JWT_SECRET;
+            const dataStoredInToken: DataStoredInToken = {
+                _email: user.email
+            };
+
+            const token = jwt.sign(
+                dataStoredInToken,
+                secret,
+                { expiresIn }
+            );
+    
+            res.cookie("user", token);
+            res.status(201).json({
+                result: 'ok',
+                token
+            });
+        }
+    } catch (e) {
+        console.error(e);
     }
 }
 
 export const logout = async (req: Request, res: Response) => {
-    // req.logout();
-    res.redirect("/login");
+    res.cookie("user","").json({ logoutSuccess: true }); 
 }
+
+export const getUsers = async (req: Request, res: Response) => {
+    try {
+        const users: User[] = await getRepository(User).find();
+        res.json(users);
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+export const getUser = async (req: Request, res: Response) => {
+    try {
+        const email = req.params.id;
+        const user: User = await getRepository(User).findOne({email: email});
+        if (user) {
+            res.json(user);
+        } else {
+            res.status(404).json({ message: 'User Not Found' });
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+/*
+export const updateUser = async (req: Request, res: Response) => {
+    const email = req.params.id;
+    const user = await getRepository(User).findOne({email: email});
+    if (user) {
+        getRepository(User).merge(user, req.body);
+        const result = await getRepository(User).save(user);
+        res.json(result);
+    } else {
+        res.status(404).json({ message: 'User Not Found' });
+    }
+}
+
+export const deleteUser = async (req: Request, res: Response) => {
+    const email = req.params.id;
+    const del_user = await getRepository(User).delete({email: email});
+    res.json(del_user);
+}
+*/

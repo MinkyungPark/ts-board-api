@@ -1,10 +1,20 @@
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, ManyToOne} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, ManyToOne, JoinColumn} from "typeorm";
 import { User } from "./User";
 
 @Entity({ name: "posts" })
 export class Post extends BaseEntity {
     @PrimaryGeneratedColumn()
     post_id: number;
+
+    @Column({ name: "user_id" })
+    userId: string;
+
+    @ManyToOne(type => User, (user) => user.email, {
+        cascade: true,
+        onDelete: "CASCADE"
+    })
+    @JoinColumn({ name: "user_id"})
+    user: User;
 
     @Column({ type: "varchar", length: 100})
     title: string;
@@ -14,7 +24,4 @@ export class Post extends BaseEntity {
 
     @Column({ type: "varchar", length: 500})
     content: string;
-
-    @ManyToOne(type => User, (user) => user.posts)
-    user: User[];
 }

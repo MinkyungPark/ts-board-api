@@ -10,7 +10,7 @@ const opts: StrategyOptions = {
 
 export default new Strategy(opts, async (payload, done) => {
     console.log(payload);
-    const user = await getRepository(User).findOne({email: payload.email});
+    const user = await getRepository(User).findOne({email: payload.email.toLowerCase() });
     try {
         if (user) {
             return done(null, user);
