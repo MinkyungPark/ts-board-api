@@ -8,7 +8,7 @@ const app = express();
 
 app.set("port", process.env.PORT || 3000);
 app.use(bodyParser.json())
-app.use(bodyParser.urlencoded( {extended: true }));
+app.use(bodyParser.urlencoded( { extended: true }));
 
 
 app.get("/", homeController.index);
@@ -18,16 +18,10 @@ app.get("/", homeController.index);
 // app.get("/login", userController.getLogin);
 // app.post("/login", userController.postLogin);
 // app.get("/logout", userController.logout);
+
 app.get("/testLogin", userController.testGet);
 app.post("/testLogin", userController.testPost);
 
-
-
-
-// app.post("/login", userController.);
-
-// app.get("/login", userController.getLogin);
-// app.post("/login", userController.postLogin);
 
 
 export default app;

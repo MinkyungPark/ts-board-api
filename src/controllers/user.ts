@@ -18,12 +18,17 @@ export const testPost = async (req: Request, res: Response) => {
     const users = await getRepository(User).find();
 
     const user = new User();
-    // user.firstName
-    // user.lastName
-    // user.email
+    if (req.query) {
+        user.firstName = req.body.firstName;
+        user.lastName = req.body.lastName;
+        user.email = req.body.email;
+        user.password = req.body.password;
+    }
+
     try {
         user.save();
         res.json({ state: 200 });
+        console.log(user);
     } catch (e) {
         res.status(404).json({message: e.message});
         throw new Error(e);
