@@ -13,9 +13,9 @@ if (process.env.NODE_ENV === "development") {
 createConnection().then(connection => {
     console.log("   **** db connection Success ****");
     app.listen(app.get("port"), () => {
-        console.log("   App is running port %d in %s mode",
-        app.get("port"), app.get("env"));
-    })
+        // console.log("   App is running port %d in %s mode",
+        // app.get("port"), app.get("env"));
+    });
 }).catch((error) => {
     console.log(error);
 });
