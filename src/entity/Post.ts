@@ -1,8 +1,10 @@
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, ManyToOne, JoinColumn} from "typeorm";
+import { IsNotEmpty, isNotEmpty,  } from "class-validator";
+import {Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn} from "typeorm";
 import { User } from "./User";
+import { ValidationEntity } from "./ValidationEntity"
 
 @Entity({ name: "posts" })
-export class Post extends BaseEntity {
+export class Post extends ValidationEntity {
     @PrimaryGeneratedColumn()
     post_id: number;
 
@@ -16,12 +18,14 @@ export class Post extends BaseEntity {
     @JoinColumn({ name: "user_id"})
     user: User;
 
-    @Column({ type: "varchar", length: 100})
+    @IsNotEmpty()
+    @Column()
     title: string;
 
     @Column({ name: "date_create", default: () => 'NOW()' })
     date: Date
 
-    @Column({ type: "varchar", length: 500})
+    @IsNotEmpty()
+    @Column()
     content: string;
 }

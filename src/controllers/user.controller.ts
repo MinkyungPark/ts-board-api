@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { getRepository } from "typeorm";
 import { User } from "../entity/User";
 import jwt from "jsonwebtoken";
+import { validate, ValidationError } from "class-validator";
 
 interface DataStoredInToken {
     _email: string;
@@ -24,7 +25,7 @@ export const verifyToken = async (req: Request, res: Response, next:NextFunction
     }
 }
 
-export const createUser = async (req: Request, res: Response) => {
+export const createUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const user: User = new User();
         if (req.body) {
@@ -33,13 +34,17 @@ export const createUser = async (req: Request, res: Response) => {
             user.email = req.body.email;
             user.password = req.body.password;
         }
-        await user.save().catch((err: any) => {
-            res.send(err.message);
-        });
-        res.json({ 
-            state: 200, 
-            message: `Sign up Success ${user.firstName} !`,
-        });
+        const errors: ValidationError[] = await validate(user);
+        if (errors.length > 0) {
+            console.log('Validation Fail error : ', errors);
+            next(errors);
+        } else {
+            user.save();
+            res.json({ 
+                state: 200, 
+                message: `Sign up Success ${user.firstName} !`,
+            });
+        }
     } catch (e) {
         console.error(e);
     }
@@ -101,19 +106,23 @@ export const getUser = async (req: Request, res: Response) => {
     }
 }
 
-export const updateUser = async (req: Request, res: Response) => {
+export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
     const email = req.params.id;
     const user = await getRepository(User).findOne({email: email});
 
     if (user.email === res.locals.userID) {
-        getRepository(User).merge(user, req.body);
-        await getRepository(User).save(user).catch((err: any) => {
-            res.send(err.message);
-        });
-        res.json({ 
-            state: 200, 
-            message: `Update Success User Info : ${user.firstName} !`,
-        });
+        const merge: User = getRepository(User).merge(user, req.body);
+        const errors: ValidationError[] = await validate(merge);
+        if (errors.length > 0) {
+            console.log('Validation Fail error : ', errors);
+            next(errors);
+        } else {
+            getRepository(User).save(user);
+            res.json({ 
+                state: 200, 
+                message: `Update Success User Info : ${user.firstName} !`,
+            });
+        }
     } else {
         res.status(403).json({ message: 'No Authrozation to update' });
     }
@@ -124,8 +133,8 @@ export const deleteUser = async (req: Request, res: Response) => {
     const user = await getRepository(User).findOne({email: email});
 
     if (user.email === res.locals.userID) {
-        const del_user = await getRepository(User).delete({email: email});
-        res.json(del_user);
+        await getRepository(User).delete({email: email});
+        res.json('Delete Suceess.');
     } else {
         res.status(403).json({ message: 'No Authrozation to update' });
     }

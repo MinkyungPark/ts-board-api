@@ -27,8 +27,8 @@ app.get("/", homeController.index);
 /* /user api */
 app.get("/user", userController.getUsers);
 app.get("/user/:id", userController.getUser);
-app.put("/user/:id", userController.updateUser);
-app.delete("/user/:id", userController.deleteUser);
+app.put("/user/:id", userController.verifyToken, userController.updateUser);
+app.delete("/user/:id", userController.verifyToken, userController.deleteUser);
 app.post("/user/login", userController.login);
 app.get("/user/logout", userController.verifyToken, userController.logout);
 app.post("/user/signup", userController.createUser);
@@ -36,11 +36,11 @@ app.post("/user/signup", userController.createUser);
 
 /* /post api */
 app.get("/post", postController.getPosts);
+app.get("/post/mypost", userController.verifyToken, postController.getMyPost);
 app.post("/post", userController.verifyToken, postController.createPost);
 app.get("/post/:id", postController.getPost);
 app.put("/post/:id", userController.verifyToken, postController.updatePost);
-app.delete("/post/:id", postController.deletePost);
-app.get("/post/mypost", userController.verifyToken, postController.getMyPost);
+app.delete("/post/:id", userController.verifyToken, postController.deletePost);
 app.get("/post/search/:keyword", postController.searchPost);
 
 

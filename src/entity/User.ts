@@ -1,25 +1,26 @@
-import { Entity, Column, BaseEntity, OneToMany, PrimaryColumn } from "typeorm";
+import { Entity, Column, OneToMany, PrimaryColumn } from "typeorm";
 import { IsEmail, IsNotEmpty, Matches } from 'class-validator'
 import { Post } from "./Post";
+import { ValidationEntity } from "./ValidationEntity"
 
 @Entity({ name: "users" })
-export class User extends BaseEntity {
-    @PrimaryColumn({ length: 100, unique: true, nullable: false })
+export class User extends ValidationEntity {
     @IsEmail()
     @IsNotEmpty()
+    @PrimaryColumn()
     email: string;
 
-    @Column({ type: "varchar", length: 20, nullable: false })
     @IsNotEmpty()
+    @Column()
     firstName: string;
 
-    @Column({ type: "varchar", length: 20, nullable: false })
     @IsNotEmpty()
+    @Column()
     lastName: string;
 
-    @Column({ nullable: false })
-    @IsNotEmpty({ message: 'Password must not be empty' })
-    @Matches(/^[a-z0-9\-_!@#$%]{5,20}$/i, { message: 'incorrect Password' })
+    @IsNotEmpty()
+    @Matches(/^[a-z0-9\-_!@#$%]{5,20}$/i, )
+    @Column()
     password: string
 
     @OneToMany(type => Post, (post) => post.user)
