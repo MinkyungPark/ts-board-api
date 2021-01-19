@@ -34,9 +34,10 @@ board api using [ nodejs(express), typescript, typeORM ]
 ## DB Table
 - table -> entity (mysql + typeorm)
 
-- db schema
+#### db schema
 + tables
 <img src="./readme/entity.png"/>
+<br>
 
 + user Table
 <img src="./readme/users.png"/>
@@ -66,7 +67,7 @@ Post entity -> User entity @ManyToOne, @JoinColum({name:"user_id"})
 |DELETE/|"/user/:id" | 이메일에 해당하는 유저 삭제, 로그인이 되어 있고 본인 일때만 삭제 가능|
 |POST/|"/user/login" | 로그인 |
 |GET/| "/user/logout" | 로그아웃 |
-|GET/| "/user/signup" | 회원가입 |
+|GET/| "/user/signup" | 회원가입 class-validator로 유효검사 |
 
 <br>
 
@@ -76,7 +77,7 @@ Post entity -> User entity @ManyToOne, @JoinColum({name:"user_id"})
 |:---|:---|:---|
 |GET/| "/post" | 모든 게시글 조회 |
 |GET/| "/post/mypost" | 본인 게시글만 조회 |
-|POST/| "/post" | 게시글 작성, 로그인 된 상태에서만 |
+|POST/| "/post" | 게시글 작성, 로그인 된 상태에서만 class-validator로 유효검사 |
 |GET/| "/post/:id" | 게시글 번호로 조회 |
 |PUT/| "/post/:id" | 게시글 번호로 수정, 로그인이 되어 있고 본인이 작성한 글일 때만 수정가능 |
 |DELETE/| "/post/:id" | 게시글 번호로 삭제, 로그인이 되어 있고 본인이 작성한 글일 때만 삭제가능 |
