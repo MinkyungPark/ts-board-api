@@ -33,11 +33,15 @@ board api using [ nodejs(express), typescript, typeORM ]
 
 ## DB Table
 - table -> entity (mysql + typeorm)
+
 - db schema
++ tables
 <img src="./readme/entity.png"/>
 
++ user Table
 <img src="./readme/users.png"/>
 
++ posts Table
 <img src="./readme/posts.png"/>
 
 + users : posts => 1 : N 관계 (foregin key - `email` column)
@@ -68,6 +72,8 @@ Post entity -> User entity @ManyToOne, @JoinColum({name:"user_id"})
 
 - post api
 
+|method|API|설명|
+|:---|:---|:---|
 |GET/| "/post" | 모든 게시글 조회 |
 |GET/| "/post/mypost" | 본인 게시글만 조회 |
 |POST/| "/post" | 게시글 작성, 로그인 된 상태에서만 |
@@ -78,9 +84,11 @@ Post entity -> User entity @ManyToOne, @JoinColum({name:"user_id"})
 
 <br>
 
-- 실행화면
+#### 실행화면
+- /user
 <img src="./readme/user.gif">
 
+- /post
 <img src="./readme/post.gif">
 
 <br>
