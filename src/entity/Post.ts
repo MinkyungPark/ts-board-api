@@ -19,7 +19,7 @@ export class Post extends BaseEntity {
     @Column({ type: "varchar", length: 100})
     title: string;
 
-    @Column({ name: 'date_create', default: () => 'NOW()' })
+    @Column({ name: "date_create", default: () => 'NOW()' })
     date: Date
 
     @Column({ type: "varchar", length: 500})

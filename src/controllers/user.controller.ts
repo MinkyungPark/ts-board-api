@@ -25,20 +25,21 @@ export const verifyToken = async (req: Request, res: Response, next:NextFunction
 }
 
 export const createUser = async (req: Request, res: Response) => {
-    const user: User = new User();
-    if (req.body) {
-        user.firstName = req.body.firstName;
-        user.lastName = req.body.lastName;
-        user.email = req.body.email;
-        user.password = req.body.password;
-    }
     try {
-        user.save();
+        const user: User = new User();
+        if (req.body) {
+            user.firstName = req.body.firstName;
+            user.lastName = req.body.lastName;
+            user.email = req.body.email;
+            user.password = req.body.password;
+        }
+        await user.save().catch((err: any) => {
+            res.send(err.message);
+        });
         res.json({ 
             state: 200, 
-            message: `Sign up Success ${user.firstName} !` 
+            message: `Sign up Success ${user.firstName} !`,
         });
-        console.log(user);
     } catch (e) {
         console.error(e);
     }
@@ -100,22 +101,32 @@ export const getUser = async (req: Request, res: Response) => {
     }
 }
 
-/*
 export const updateUser = async (req: Request, res: Response) => {
     const email = req.params.id;
     const user = await getRepository(User).findOne({email: email});
-    if (user) {
+
+    if (user.email === res.locals.userID) {
         getRepository(User).merge(user, req.body);
-        const result = await getRepository(User).save(user);
-        res.json(result);
+        await getRepository(User).save(user).catch((err: any) => {
+            res.send(err.message);
+        });
+        res.json({ 
+            state: 200, 
+            message: `Update Success User Info : ${user.firstName} !`,
+        });
     } else {
-        res.status(404).json({ message: 'User Not Found' });
+        res.status(403).json({ message: 'No Authrozation to update' });
     }
 }
 
 export const deleteUser = async (req: Request, res: Response) => {
     const email = req.params.id;
-    const del_user = await getRepository(User).delete({email: email});
-    res.json(del_user);
+    const user = await getRepository(User).findOne({email: email});
+
+    if (user.email === res.locals.userID) {
+        const del_user = await getRepository(User).delete({email: email});
+        res.json(del_user);
+    } else {
+        res.status(403).json({ message: 'No Authrozation to update' });
+    }
 }
-*/

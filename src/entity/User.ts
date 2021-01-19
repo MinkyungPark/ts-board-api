@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, PrimaryColumn } from "typeorm";
+import { Entity, Column, BaseEntity, OneToMany, PrimaryColumn } from "typeorm";
 import { IsEmail, IsNotEmpty, Matches } from 'class-validator'
 import { Post } from "./Post";
 
