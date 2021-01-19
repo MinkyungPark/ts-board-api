@@ -26,13 +26,12 @@ app.get("/", homeController.index);
 
 /* /user api */
 app.get("/user", userController.getUsers);
-app.get("/user/:id", userController.getUser);
-app.put("/user/:id", userController.verifyToken, userController.updateUser);
-app.delete("/user/:id", userController.verifyToken, userController.deleteUser);
 app.post("/user/login", userController.login);
 app.get("/user/logout", userController.verifyToken, userController.logout);
 app.post("/user/signup", userController.createUser);
-
+app.get("/user/:id", userController.getUser);
+app.put("/user/:id", userController.verifyToken, userController.updateUser);
+app.delete("/user/:id", userController.verifyToken, userController.deleteUser);
 
 /* /post api */
 app.get("/post", postController.getPosts);
