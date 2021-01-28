@@ -1,6 +1,5 @@
 import express from "express";
 import morgan from "morgan";
-import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import passport from "passport";
 import passportMiddleware from "./config/passport";
@@ -15,12 +14,11 @@ app.set("port", process.env.PORT || 3000);
 
 /* middleware set up */
 app.use(morgan("dev"));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded( { extended: true }));
 app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 passport.use(passportMiddleware);
-
 
 app.get("/", homeController.index);
 
@@ -37,10 +35,9 @@ app.delete("/user/:id", userController.verifyToken, userController.deleteUser);
 app.get("/post", postController.getPosts);
 app.get("/post/mypost", userController.verifyToken, postController.getMyPost);
 app.post("/post", userController.verifyToken, postController.createPost);
+app.get("/post/search/:keyword", postController.searchPost);
 app.get("/post/:id", postController.getPost);
 app.put("/post/:id", userController.verifyToken, postController.updatePost);
 app.delete("/post/:id", userController.verifyToken, postController.deletePost);
-app.get("/post/search/:keyword", postController.searchPost);
-
 
 export default app;
